@@ -8,7 +8,14 @@ class ExportsHandler {
     autoBind(this);
   }
 
-  async postExportsHandler(request, h) {}
+  async postExportsHandler(request, h) {
+    const response = h.response({
+      status: 'success',
+      message: 'Berhasil melakukan export data tabungan',
+    });
+    response.code(201);
+    return response;
+  }
 }
 
 module.exports = ExportsHandler;
