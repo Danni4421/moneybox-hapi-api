@@ -7,12 +7,12 @@ const UsersService = require('./service/db/users/UsersService');
 const UsersValidator = require('./validator/users');
 
 const savings = require('./api/savings');
-const MoneyboxService = require('./service/db/savings/MoneyboxService');
-const MoneyboxDetailsService = require('./service/db/savings/MoneyboxDetailsService');
-const SavingGoalsService = require('./service/db/savings/SavingGoalsService');
+const SavingService = require('./service/db/savings/SavingsService');
 const SavingsValidator = require('./validator/savings');
 
 const init = async () => {
+  const usersService = new UsersService(SavingService);
+
   const server = Hapi.server({
     host: config.server.host,
     port: config.server.port,
@@ -27,16 +27,14 @@ const init = async () => {
     {
       plugin: users,
       options: {
-        service: new UsersService(),
+        service: usersService,
         validator: UsersValidator,
       },
     },
     {
       plugin: savings,
       options: {
-        moneyboxService: new MoneyboxService(),
-        moneyboxDetailsService: new MoneyboxDetailsService(),
-        savingGoalsService: new SavingGoalsService(),
+        service: SavingService,
         validator: SavingsValidator,
       },
     },

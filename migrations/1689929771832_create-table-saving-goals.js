@@ -11,7 +11,7 @@ exports.up = (pgm) => {
       notNull: true,
     },
     target: {
-      type: 'DATE',
+      type: 'TEXT',
       notNull: true,
     },
     status: {
