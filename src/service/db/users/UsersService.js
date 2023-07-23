@@ -29,7 +29,7 @@ class UsersService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal menambahkan data user');
+      throw new Error('Gagal menambahkan data user.');
     }
 
     return result.rows[0].id;
@@ -37,9 +37,15 @@ class UsersService {
 
   async deleteUser(userId) {
     const query = {
-      text: 'DELETE FROM moneybox WHERE user_id = $1',
+      text: 'DELETE FROM users WHERE id = $1 RETURNING id',
       values: [userId],
     };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new Error('Gagal menghapus user, Id tidak ditemukan.');
+    }
   }
 }
 

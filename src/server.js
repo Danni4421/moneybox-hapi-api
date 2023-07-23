@@ -7,11 +7,15 @@ const UsersService = require('./service/db/users/UsersService');
 const UsersValidator = require('./validator/users');
 
 const savings = require('./api/savings');
-const SavingService = require('./service/db/savings/SavingsService');
+const savingService = require('./service/db/savings/SavingsService');
 const SavingsValidator = require('./validator/savings');
 
+const _exports = require('./api/exports');
+const ExportsService = require('./service/rabbitmq/ExportsService');
+const ExportsValidator = require('./validator/exports');
+
 const init = async () => {
-  const usersService = new UsersService(SavingService);
+  const usersService = new UsersService(savingService);
 
   const server = Hapi.server({
     host: config.server.host,
@@ -34,8 +38,16 @@ const init = async () => {
     {
       plugin: savings,
       options: {
-        service: SavingService,
+        service: savingService,
         validator: SavingsValidator,
+      },
+    },
+    {
+      plugin: _exports,
+      options: {
+        ExportsService: ExportsService,
+        savingService,
+        validator: ExportsValidator,
       },
     },
   ]);

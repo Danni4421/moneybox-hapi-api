@@ -6,12 +6,12 @@ class SavingGoalsService {
     this._pool = new Pool();
   }
 
-  async addSavingGoal(savingGoal, target) {
+  async addSavingGoal(savingGoals, target) {
     const svgId = `svg-${nanoid(16)}`;
     const status = 'on-going';
     const query = {
       text: 'INSERT INTO saving_goals VALUES ($1, $2, $3, $4) RETURNING id',
-      values: [svgId, savingGoal, target, status],
+      values: [svgId, savingGoals, target, status],
     };
 
     const result = await this._pool.query(query);
@@ -34,6 +34,8 @@ class SavingGoalsService {
     if (!result.rowCount) {
       throw new Error('Gagal mendapatkan saving goal, Id tidak ditemukan');
     }
+
+    return result.rows[0];
   }
 
   async deleteSavingGoal(svgId) {

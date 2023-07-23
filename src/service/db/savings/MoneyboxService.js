@@ -51,6 +51,23 @@ class MoneyboxService {
       throw new Error('Gagal menhapus moneybox, Id tidak ditemukan');
     }
   }
+
+  async deleteMoneyboxByUserId(userId) {
+    const query = {
+      text: 'DELETE FROM moneybox WHERE user_id = $1 RETURNING mb_details_id',
+      values: [userId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new Error(
+        'Gagal menghapus tabungan, User tidak memiliki tabungan.'
+      );
+    }
+
+    return result.rows;
+  }
 }
 
 module.exports = MoneyboxService;
