@@ -2,6 +2,8 @@ const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 
 const mapMoneyboxDetailsToModels = require('../../utils/MapMoneyboxDetails');
+const NotFoundError = require('../../../exceptions/client/NotFoundError');
+const InvariantError = require('../../../exceptions/client/InvariantError');
 
 class MoneyboxDetailsService {
   constructor() {
@@ -36,7 +38,7 @@ class MoneyboxDetailsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan detail moneybox');
+      throw new InvariantError('Gagal mendapatkan detail moneybox');
     }
 
     return result.rows[0].map(mapMoneyboxDetailsToModels);
@@ -53,7 +55,7 @@ class MoneyboxDetailsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal memperbarui tabungan, Id tidak ditemukan');
+      throw new NotFoundError('Gagal memperbarui tabungan, Id tidak ditemukan');
     }
   }
 
@@ -66,7 +68,9 @@ class MoneyboxDetailsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal menhapus moneybox details, Id tidak ditemukan');
+      throw new NotFoundError(
+        'Gagal menhapus moneybox details, Id tidak ditemukan'
+      );
     }
   }
 }

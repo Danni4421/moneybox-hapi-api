@@ -5,7 +5,7 @@ const UserPayloadSchema = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().optional(),
   password: Joi.string().required(),
-  email: Joi.string().email(),
+  email: Joi.string().email().required(),
   address: Joi.string().required(),
 });
 

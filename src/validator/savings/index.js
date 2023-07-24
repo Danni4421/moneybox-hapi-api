@@ -1,3 +1,4 @@
+const InvariantError = require('../../exceptions/client/InvariantError');
 const {
   PostMoneyboxDetailsPayloadSchema,
   PutMoneyboxDetailsPayloadSchema,
@@ -8,14 +9,14 @@ const SavingsValidator = {
     const validationResult = PostMoneyboxDetailsPayloadSchema.validate(payload);
 
     if (validationResult.error) {
-      throw new Error(validationResult.error.message);
+      throw new InvariantError(validationResult.error.message);
     }
   },
   validatePutMoneyboxPayload: (payload) => {
     const validationResult = PutMoneyboxDetailsPayloadSchema.validate(payload);
 
     if (validationResult.error) {
-      throw new Error(validationResult.error.message);
+      throw new InvariantError(validationResult.error.message);
     }
   },
 };

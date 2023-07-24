@@ -1,5 +1,7 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
+const InvariantError = require('../../../exceptions/client/InvariantError');
+const NotFoundError = require('../../../exceptions/client/NotFoundError');
 
 class SavingGoalsService {
   constructor() {
@@ -17,7 +19,7 @@ class SavingGoalsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal menambahkan data saving goal');
+      throw new InvariantError('Gagal menambahkan data saving goal');
     }
 
     return result.rows[0].id;
@@ -32,7 +34,9 @@ class SavingGoalsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal mendapatkan saving goal, Id tidak ditemukan');
+      throw new NotFoundError(
+        'Gagal mendapatkan saving goal, Id tidak ditemukan'
+      );
     }
 
     return result.rows[0];
@@ -47,7 +51,9 @@ class SavingGoalsService {
     const result = await this._pool.query(query);
 
     if (!result.rowCount) {
-      throw new Error('Gagal menghapus saving goal, Id tidak ditemukan.');
+      throw new NotFoundError(
+        'Gagal menghapus saving goal, Id tidak ditemukan.'
+      );
     }
   }
 }
