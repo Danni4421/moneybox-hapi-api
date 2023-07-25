@@ -4,6 +4,8 @@ const { Pool } = require('pg');
 const mapMoneyboxToModels = require('../../utils/MapMoneybox');
 const NotFoundError = require('../../../exceptions/client/NotFoundError');
 const InvariantError = require('../../../exceptions/client/InvariantError');
+const AutorizationsError = require('../../../exceptions/client/AuthorizationError');
+const AuthorizationsError = require('../../../exceptions/client/AuthorizationError');
 
 class MoneyboxService {
   constructor() {
@@ -26,21 +28,6 @@ class MoneyboxService {
     return result.rows[0].id;
   }
 
-  async getMoneybox(userId, mbdId) {
-    const query = {
-      text: 'SELECT * FROM moneybox WHERE user_id = $1 AND mb_details_id = $2',
-      values: [userId, mbdId],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new NotFoundError('Gagal mendapatkan moneybox, Id tidak ditemukan');
-    }
-
-    return result.rows[0].map(mapMoneyboxToModels);
-  }
-
   async deleteMoneybox(userId, mbdId) {
     const query = {
       text: 'DELETE FROM moneybox WHERE user_id = $1 AND mb_details_id = $2',
@@ -56,7 +43,7 @@ class MoneyboxService {
 
   async deleteMoneyboxByUserId(userId) {
     const query = {
-      text: 'DELETE FROM moneybox WHERE user_id = $1 RETURNING mb_details_id',
+      text: 'DELETE FROM moneybox WHERE user_id = $1 RETURNING mb_details_id AS "mbdId"',
       values: [userId],
     };
 
@@ -69,6 +56,27 @@ class MoneyboxService {
     }
 
     return result.rows;
+  }
+
+  async verifyMoneybox(userId, mbdId) {
+    const query = {
+      text: 'SELECT user_id AS user FROM moneybox WHERE mb_details_id = $1',
+      values: [mbdId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Tabungan tidak ditemukan. Id tidak sesuai.');
+    }
+
+    const { user } = result.rows[0];
+
+    if (user !== userId) {
+      throw new AuthorizationsError(
+        'Gagal mendapatkan tabungan, Tabungan bukan milik Anda.'
+      );
+    }
   }
 }
 

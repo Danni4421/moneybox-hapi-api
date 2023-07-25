@@ -15,7 +15,6 @@ class UsersService {
   async addUser({ username, firstName, lastName, password, email, address }) {
     const id = `user-${nanoid(16)}`;
     const _username = `${+new Date()}-${username}`;
-    console.log(_username);
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const query = {
@@ -78,14 +77,13 @@ class UsersService {
   }
 
   async verifyUserCredentials({ username, password }) {
-    console.log(username, password);
     const query = {
       text: 'SELECT id, password FROM users WHERE username = $1',
       values: [username],
     };
 
     const result = await this._pool.query(query);
-    console.log(result);
+
     if (!result.rowCount) {
       throw new AuthenticationsError(
         'Verifikasi gagal, Kredensial tidak valid.'

@@ -7,7 +7,7 @@ const PostMoneyboxDetailsPayloadSchema = Joi.object({
 });
 
 const PutMoneyboxDetailsPayloadSchema = Joi.object({
-  amount: Joi.number().min(1).required(),
+  amount: Joi.number().strict().min(1).required(),
 });
 
 module.exports = {

@@ -11,7 +11,6 @@ class UsersHandler {
   }
 
   async postUserHandler(request, h) {
-    console.log(request.payload);
     this._validator.validateUserPayload(request.payload);
     const userId = await this._usersService.addUser(request.payload);
 
@@ -46,22 +45,24 @@ class UsersHandler {
     try {
       const moneybox =
         await this._savingService.mbService.deleteMoneyboxByUserId(userId);
-      moneybox.map(async (mbdId) => {
+      moneybox.map(async ({ mbdId }) => {
         const { svgId } =
-          await this._savingService.mbdService.getMoneyboxDetails(mbdId);
+          await this._savingService.mbdService.getMoneyboxDetailsById(mbdId);
         await this._savingService.mbdService.deleteMoneyboxDetails(mbdId);
         await this._savingService.svgService.deleteSavingGoal(svgId);
       });
     } catch (error) {
       if (error instanceof NotFoundError) {
-        await this._usersService.deleteUser(userId);
-        const response = h.response({
-          status: 'success',
-          message: 'Berhasil menghapus user',
-        });
-        return response;
+        console.log(error.message);
       }
     }
+
+    await this._usersService.deleteUser(userId);
+    const response = h.response({
+      status: 'success',
+      message: 'Berhasil menghapus user',
+    });
+    return response;
   }
 }
 

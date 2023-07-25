@@ -41,7 +41,7 @@ class MoneyboxDetailsService {
       throw new InvariantError('Gagal mendapatkan detail moneybox');
     }
 
-    return result.rows[0].map(mapMoneyboxDetailsToModels);
+    return result.rows.map(mapMoneyboxDetailsToModels)[0];
   }
 
   async putMoneyboxDetails(mbdId, { amount }) {
@@ -49,7 +49,7 @@ class MoneyboxDetailsService {
     const { balance } = await this.getMoneyboxDetailsById(mbdId);
     const query = {
       text: 'UPDATE moneybox_details SET balance = $1, updated_at = $2 WHERE id = $3 RETURNING id',
-      values: [balance + amount, updatedAt],
+      values: [balance + amount, updatedAt, mbdId],
     };
 
     const result = await this._pool.query(query);

@@ -1,9 +1,9 @@
 const autoBind = require('auto-bind');
 
 class ExportsHandler {
-  constructor(exportsService, moneyboxDetailsService, validator) {
+  constructor(exportsService, savingService, validator) {
     this._exportsService = exportsService;
-    this._moneyboxDetailsService = moneyboxDetailsService;
+    this._savingService = savingService;
     this._validator = validator;
 
     autoBind(this);
@@ -12,14 +12,16 @@ class ExportsHandler {
   async postExportsHandler(request, h) {
     this._validator.validateExportPayload(request.payload);
 
-    const { mbdId } = request.params;
-    const moneybox = await this._moneyboxDetailsService.getMoneyboxDetails(
-      mbdId
-    );
+    const { id: userId } = request.auth.credentials;
+    const { mbId } = request.params;
+
+    console.log({ userId, mbId });
+    await this._savingService.mbService.verifyMoneybox(userId, mbId);
+    console.log('success');
 
     await this._exportsService.sendMessage(
       'export:tabungan',
-      JSON.stringify(moneybox)
+      JSON.stringify(mbId)
     );
 
     const response = h.response({

@@ -20,6 +20,9 @@ const _exports = require('./api/exports');
 const ExportsService = require('./service/rabbitmq/ExportsService');
 const ExportsValidator = require('./validator/exports');
 const ClientError = require('./exceptions/client/ClientError');
+const AuthenticationsError = require('./exceptions/client/AuthenticationsError');
+const NotFoundError = require('./exceptions/client/NotFoundError');
+const InvariantError = require('./exceptions/client/InvariantError');
 
 const init = async () => {
   const usersService = new UsersService(savingService);
@@ -85,7 +88,7 @@ const init = async () => {
     {
       plugin: _exports,
       options: {
-        ExportsService: ExportsService,
+        exportsService: ExportsService,
         savingService,
         validator: ExportsValidator,
       },
@@ -96,6 +99,33 @@ const init = async () => {
     const { response } = req;
     if (response instanceof Error) {
       console.log(response);
+      if (response instanceof AuthenticationsError) {
+        const authError = res.response({
+          status: 'fail',
+          message: response.message,
+        });
+        authError.code(response.statusCode);
+        return authError;
+      }
+
+      if (response instanceof NotFoundError) {
+        const notFoundError = res.response({
+          status: 'fail',
+          message: response.message,
+        });
+        notFoundError.code(response.statusCode);
+        return notFoundError;
+      }
+
+      if (response instanceof InvariantError) {
+        const invariantError = res.response({
+          status: 'fail',
+          message: response.message,
+        });
+        invariantError.code(response.statusCode);
+        return invariantError;
+      }
+
       if (response instanceof ClientError) {
         const clientError = res.response({
           status: 'fail',

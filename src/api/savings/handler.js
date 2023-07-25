@@ -24,13 +24,13 @@ class SavingsHandler {
       svgId
     );
 
-    const mbId = await this._service.mbService.addMoneybox(userId, mbdId);
+    await this._service.mbService.addMoneybox(userId, mbdId);
 
     const response = h.response({
       status: 'success',
       message: 'Berhasil membuat tabungan',
       data: {
-        mbId,
+        mbdId,
       },
     });
     response.code(201);
@@ -38,38 +38,53 @@ class SavingsHandler {
   }
 
   async getSavingDetailByIdHandler(request, h) {
-    const { mbdId } = request.params;
-    const moneybox = await this._service.mbdService.getMoneyboxDetail(mbdId);
+    const { id: userId } = request.auth.credentials;
+    const { mbId } = request.params;
+
+    await this._service.mbService.verifyMoneybox(userId, mbId);
+    const moneybox = await this._service.mbdService.getMoneyboxDetailsById(
+      mbId
+    );
 
     const response = h.response({
       status: 'success',
       message: 'Berhasil mendapatkan detail tabungan',
-      moneybox,
+      data: {
+        id: moneybox.id,
+        balance: moneybox.balance,
+      },
     });
     return response;
   }
 
   async putSavingByIdHandler(request, h) {
-    this._validator.validatePutSavingPayload(request.payload);
-    const { mbdId } = request.params;
+    this._validator.validatePutMoneyboxPayload(request.payload);
+    const { id: userId } = request.auth.credentials;
+    const { mbId } = request.params;
 
-    await this._service.mbdService.putSavingDetails(mbdId, request.payload);
+    await this._service.mbService.verifyMoneybox(userId, mbId);
+    await this._service.mbdService.putMoneyboxDetails(mbId, request.payload);
 
     const response = h.response({
       status: 'success',
       message: 'Berhasil memperbarui data tabungan',
+      data: {
+        saving: `Berhasil menabung sebesar ${request.payload.amount}`,
+      },
     });
     return response;
   }
 
   async deleteSavingByIdHandler(request, h) {
-    const { mbdId } = request.params;
+    const { mbId } = request.params;
     const { id: userId } = request.auth.credentials;
-    const { svgId } = await this._service.mbdService.getMoneyboxDetail(mbdId);
+    const { svgId } = await this._service.mbdService.getMoneyboxDetailsById(
+      mbId
+    );
 
-    await this._service.mbService.deleteMoneybox(userId, mbdId);
-    await this._service.mbdService.deleteMoneyboxDetails(mbdId);
-    await await this._service.svgService.deleteSavingGoal(svgId);
+    await this._service.mbService.deleteMoneybox(userId, mbId);
+    await this._service.mbdService.deleteMoneyboxDetails(mbId);
+    await this._service.svgService.deleteSavingGoal(svgId);
 
     const response = h.response({
       status: 'success',

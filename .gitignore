@@ -1,3 +1,4 @@
 /node_modules
+/unit_test
 .env
 yarn.lock
