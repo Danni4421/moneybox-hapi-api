@@ -73,8 +73,8 @@ _note: add amount of your money that you want to save_
 
 - ### Collection
 
-  <a id="raw-url" href="./unit_test/Moneybox API Test.postman_collection.json" download>Download Moneybox Postman Collection Test here</a>
+  <a id="raw-url" href="https://drive.google.com/file/d/1hZNJ2ZQbIoP-72GCaefvjtqGrxMMTX9h/view?usp=drive_link" download>Download Moneybox Postman Collection Test here</a>
 
 - ### Environment
 
-  <a id="raw-url" href="./unit_test/Moneybox API.postman_environment.json" download>Download Moneybox Postman Environment Test here</a>
+  <a id="raw-url" href="https://drive.google.com/file/d/1q-of5Ez8bxiNgfOwioNf6QJXI6K5SaTO/view?usp=drive_link" download>Download Moneybox Postman Environment Test here</a>
